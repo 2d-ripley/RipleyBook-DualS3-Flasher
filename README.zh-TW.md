@@ -52,7 +52,7 @@ RipleyBookDual 3.0 是專為 **M5Stack Paper S3** 製作的 EPUB 閱讀韌體。
 ## 第一步：安裝 Factory 韌體
 
 1. **先備份。** 首次刷機可能清除原有設定與 Flash 中的閱讀資料；先保存原本可用的韌體、重要進度及 SD 卡內容。
-2. 以**可傳輸資料**的 USB-C 線連接 Paper S3 和電腦。在電腦的 Chrome／Edge 開啟 [RipleyBookDual 3.0 一鍵刷機頁](https://2d-ripley.github.io/RipleyBook-DualS3-Flasher/)。
+2. 以**可傳輸資料**的 USB-C 線連接 Paper S3 和電腦。在電腦的 Chrome／Edge 開啟 [RipleyBookDual 3.0 一鍵刷機頁](https://2d-ripley.github.io/RipleyBook-DualS3-Flasher/?lang=zh)。
 3. 依 M5Stack 的下載模式流程：**長按 Paper S3 電源鍵，直到背面紅色狀態燈開始閃爍，再鬆開。**
 4. 網頁只顯示 **RipleyBookDual 3.0 Full** 一種版本。看到刷機檔已驗證後，點 **Install／安裝**，選擇正確序列埠並確認刷入。
 5. 寫入過程中**不要拔線**或讓其他程式占用序列埠。完成後按裝置提示重新啟動，確認可以進入 Home／Reader。

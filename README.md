@@ -52,7 +52,7 @@ RipleyBookDual 3.0 is an EPUB reader firmware for the **M5Stack Paper S3**. Ther
 ## Step 1: Install the Factory firmware
 
 1. **Back up anything important.** Factory flashing may erase existing settings and data stored in flash. Keep copies of reading positions and microSD data.
-2. Connect the Paper S3 using a **USB-C data cable**. On a computer with Chrome or Edge, open the [RipleyBookDual 3.0 one-click installer](https://2d-ripley.github.io/RipleyBook-DualS3-Flasher/).
+2. Connect the Paper S3 using a **USB-C data cable**. On a computer with Chrome or Edge, open the [RipleyBookDual 3.0 one-click installer](https://2d-ripley.github.io/RipleyBook-DualS3-Flasher/?lang=en).
 3. Enter the Paper S3 download mode: **hold the power button until the rear status LED flashes red, then release**.
 4. Only one choice appears: **RipleyBookDual 3.0 Full**. After firmware verification, select **Install**, choose the correct serial port and confirm flashing.
 5. Keep the USB cable connected and do not run other serial tools. When installation finishes, reboot and confirm that Home and Reader launch.
