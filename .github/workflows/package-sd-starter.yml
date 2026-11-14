@@ -1,0 +1,116 @@
+name: Package optional JyunsaiKaai SD starter (no firmware or Pages deploy)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/package-sd-starter.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout Flasher
+        uses: actions/checkout@v4
+      - name: Fetch pinned original OFL font and licence
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p /tmp/sd-font-build
+          curl --fail --location --retry 3 --show-error \
+            'https://raw.githubusercontent.com/ItMarki/jyunsaikaai/9e35c8713517762c36c84cdb5a9a9a0bdfec57b8/fonts/JyunsaiKaai-Regular.ttf' \
+            -o /tmp/sd-font-build/JyunsaiKaai-Regular.ttf
+          test "$(wc -c < /tmp/sd-font-build/JyunsaiKaai-Regular.ttf)" -eq 10991696
+          test "$(git hash-object /tmp/sd-font-build/JyunsaiKaai-Regular.ttf)" = 'a07ea6ef05cd41bbbf2108395953ddfca49f2fef'
+          curl --fail --location --retry 3 --show-error \
+            'https://raw.githubusercontent.com/fontworks-fonts/Klee/8b0532731b63ad8a445ca341d8d7d941079b83ab/OFL.txt' \
+            -o /tmp/sd-font-build/OFL.txt
+          test "$(git hash-object /tmp/sd-font-build/OFL.txt)" = 'cb9ced3f0aad10958824080d84c391100bc53986'
+          echo 'PASS: exact pinned upstream TTF and SIL OFL 1.1 license'
+      - name: Assemble and validate one optional SD card ZIP
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, zipfile
+          out=Path("dist/RipleyBookDual3.0-SD-Starter.zip")
+          out.parent.mkdir(parents=True,exist_ok=True)
+          source=Path("/tmp/sd-font-build")
+          notice="""JyunsaiKaai / 芫茜雅楷 — SIL Open Font License 1.1
+          Original source: https://github.com/ItMarki/jyunsaikaai
+          Pinned source commit: 9e35c8713517762c36c84cdb5a9a9a0bdfec57b8
+          Original regular font Git blob: a07ea6ef05cd41bbbf2108395953ddfca49f2fef
+          Font: ItMarki / The Klee Project, based on Klee One by Fontworks
+          The font is redistributed unmodified, free of charge, under SIL OFL 1.1.
+          The OFL.txt license text is taken from the pinned original Klee project:
+          https://github.com/fontworks-fonts/Klee/blob/8b0532731b63ad8a445ca341d8d7d941079b83ab/OFL.txt
+          The original authors retain their copyrights and license.
+          The font retains its original copyright and SIL OFL 1.1 terms.
+          """
+          guide="""RipleyBookDual3.0 — Optional SD Starter (繁體中文 / English)
+
+          這不是韌體，請勿用於刷機！Factory BIN 請從刷機頁另行安裝。
+          1. 在 iPad、Mac 或電腦解壓 ZIP。
+          2. 將此包內的 books/ 與 fonts/ 資料夾複製到 microSD 卡的根目錄。
+          3. EPUB 放在 books/；預設字型已放在 fonts/JyunsaiKaai-Regular.ttf。
+          4. 開啟 Paper S3 的 Reader，在 Text 選 JyunsaiKaai-Regular.ttf、44 pt。
+          5. Spread 模式：兩台使用完全相同的 EPUB、TTF、字號與排版設定。
+          6. 若 SD 卡已使用過，只合併需要的檔案；不要整卡覆蓋，以免遺失閱讀進度。
+
+          注意：books/ 是整理書籍用的自訂資料夾；fonts/ 是 Reader 的 TTF 搜尋路徑。
+          若只下載原字型，可自行建立 fonts/ 並放入相同檔名的 TTF。
+
+          This is NOT firmware. Never flash this ZIP or the TTF!
+          1. Unzip and copy the enclosed books/ and fonts/ folders to the SD card root.
+          2. Put EPUBs in books/. The font is fonts/JyunsaiKaai-Regular.ttf.
+          3. In Reader > Text choose JyunsaiKaai-Regular.ttf and 44 pt.
+          4. Spread requires the SAME EPUB file, TTF, size and layout on both readers.
+          5. If the cards are already in use, merge files without overwriting saved progress.
+
+          books/ is just a suggested folder. fonts/ is the Reader's TTF scan path.
+          See LICENSES/OFL.txt and LICENSES/NOTICE.txt for font copyright/licensing.
+          """
+          notice="\n".join(line.strip() for line in notice.strip().splitlines())+"\n"
+          guide="\n".join(line.strip() for line in guide.strip().splitlines())+"\n"
+          with zipfile.ZipFile(out,"w",compression=zipfile.ZIP_DEFLATED,compresslevel=7) as z:
+              z.writestr("books/","")
+              z.writestr("fonts/","")
+              z.write(source/"JyunsaiKaai-Regular.ttf","fonts/JyunsaiKaai-Regular.ttf")
+              z.writestr("LICENSES/NOTICE.txt",notice)
+              z.write(source/"OFL.txt","LICENSES/OFL.txt")
+              z.writestr("README-START-HERE.txt",guide)
+          with zipfile.ZipFile(out) as z:
+              assert z.testzip() is None
+              names=z.namelist()
+              assert names==["books/","fonts/","fonts/JyunsaiKaai-Regular.ttf","LICENSES/NOTICE.txt","LICENSES/OFL.txt","README-START-HERE.txt"]
+              b=z.read("fonts/JyunsaiKaai-Regular.ttf")
+              assert len(b)==10991696
+              assert z.read("LICENSES/OFL.txt").startswith(b"Copyright 2020 The Klee Project")
+          print("PASS SD starter ZIP:",out.stat().st_size,"bytes",hashlib.sha256(out.read_bytes()).hexdigest())
+          print("PASS exactly one original OFL font, user-made books/ and fonts/, no firmware or proprietary Ripley art")
+          PY
+      - name: Publish optional SD starter as a separate download
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          tag="sd-starter-v1"
+          file="dist/RipleyBookDual3.0-SD-Starter.zip"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$file" --clobber
+          else
+            gh release create "$tag" "$file" \
+              --target "$GITHUB_SHA" \
+              --title "Optional SD Starter — JyunsaiKaai (OFL 1.1)" \
+              --notes "OPTIONAL SD-CARD STARTER, NOT FIRMWARE. Contains original unmodified JyunsaiKaai-Regular.ttf, books/ and fonts/ folders, bilingual setup instructions, SIL OFL 1.1 license and attribution. Original font source: https://github.com/ItMarki/jyunsaikaai. Keep Factory BIN separate." \
+              --latest=false
+          fi
+          gh release view "$tag" --json assets --jq '.assets[].name' | grep -Fx 'RipleyBookDual3.0-SD-Starter.zip' >/dev/null
+          gh release view "$tag" --json url,tagName,assets

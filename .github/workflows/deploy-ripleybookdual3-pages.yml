@@ -1,0 +1,78 @@
+name: Deploy RipleyBookDual 3.0 Full Web Flasher (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ripleybookdual3-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout exactly the P3.0 one-Full flasher
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Fail-closed verification of newly boot-tested P3.0 Factory; no fallback
+        run: |
+          set -Eeuo pipefail
+          mkdir -p docs/firmware
+          # NEVER borrow a previous version or silently download an old factory.
+          # The exact 3.0 factory must be uploaded and hardware-boot approved.
+          test -f docs/firmware/RipleyBookDual3.0-Full-Factory.bin
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          p=Path("docs/firmware/RipleyBookDual3.0-Full-Factory.bin")
+          b=p.read_bytes()
+          expected="36da144dd3d8c4ce4fc33a3e8ff2db60bed4738312e5ed15794ba475ec1f16b1"
+          assert len(b)==6333440, "Unexpected factory size"
+          assert hashlib.sha256(b).hexdigest()==expected, "Factory SHA changed"
+          assert b[0]==0xe9 and b[12]==9 and b[0x8000:0x8002]==bytes.fromhex('aa50')
+          assert b[0x10000]==0xe9 and b[0x1000c]==9
+          assert hashlib.sha256(b[0x10000:]).hexdigest()=="c0a46ccb4f777487bdfc4b94321cbe8f5683145587a24cd6f7a4801641b14838"
+          assert b[0xe000:0x10000]==bytes([255])*0x2000
+          print("PASS: exact P3.0 0x0 Factory BIN, manually authorized after physical boot test",len(b),expected)
+          PY
+      - name: Unlock only the cryptographically pinned P3.0 Full installer
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          f=Path("docs/index.html")
+          s=f.read_text(encoding='utf-8')
+          def once(a,b):
+            global s
+            assert s.count(a)==1,(a[:100],s.count(a))
+            s=s.replace(a,b,1)
+          once('factorySize: 0, // set ONLY after 0x0 factory hardware boot acceptance','factorySize: 6333440, // verified in deployed Pages artifact')
+          once('applicationSHA256: "",','applicationSHA256: "c0a46ccb4f777487bdfc4b94321cbe8f5683145587a24cd6f7a4801641b14838",')
+          once('factorySHA256: "" // keep Install disabled until exact 0x0 Factory boot test passes',
+               'factorySHA256: "36da144dd3d8c4ce4fc33a3e8ff2db60bed4738312e5ed15794ba475ec1f16b1" // exact verified Factory bytes')
+          assert s.count('id="card-full"')==1
+          assert 'id="card-spread-only"' not in s
+          f.write_text(s,encoding='utf-8')
+          print("PASS: Pages installer points to the ONE same-origin Full BIN with pinned hashes")
+          PY
+          test -f docs/.nojekyll
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload the P3.0 static Pages site and its single Factory BIN
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Deploy HTTPS website
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>RipleyBookDual · Parallel 3.0 Flasher</title>
+<meta name="description" content="RipleyBookDual 3.0 single Full Factory installer with Parallel 3.0 for Paper S3.">
+<style>
+:root{--paper:#f4f2eb;--ink:#222521;--muted:#636860;--line:#cbc9c0;--card:#fffef9;--accent:#303e33;--soft:#e8ede5}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
+main{max-width:930px;margin:auto;padding:36px 22px 64px}header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font-size:14px;letter-spacing:.13em;font-weight:750;text-transform:uppercase}.lang{border:1px solid var(--line);background:transparent;border-radius:24px;padding:7px 14px;color:var(--ink);cursor:pointer}
+h1{font-size:clamp(38px,7.5vw,66px);line-height:1.12;letter-spacing:-.045em;margin:55px 0 10px}
+.lead{max-width:710px;color:var(--muted);font-size:clamp(16px,2.4vw,20px);margin:0 0 36px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:750;font-size:12px}
+.cards{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;max-width:660px}.card{border:1px solid var(--line);border-radius:18px;background:var(--card);padding:26px;min-height:290px}
+.card h2{font-size:29px;line-height:1.2;margin:6px 0}.card p{color:var(--muted);margin:8px 0 20px}.version{display:inline-block;background:var(--soft);border-radius:20px;padding:2px 12px;font-size:12px;font-weight:650}
+.status{min-height:40px;color:var(--muted);font-size:14px}.status.ready{color:#22663d;font-weight:650}.status.locked{color:#935a1a}
+.install{margin-top:9px;min-height:58px}.install button,.download{display:inline-block;border:none;border-radius:12px;background:var(--accent);color:white;padding:11px 22px;cursor:pointer;font:inherit;font-weight:700;text-decoration:none}.install button:focus-visible,.lang:focus-visible{outline:3px solid #819b7f;outline-offset:3px}
+.install esp-web-install-button{--esp-tools-button-color:var(--accent);--esp-tools-button-text-color:#fff;--esp-tools-button-border-radius:12px}
+.download{margin-top:12px;font-size:13px;background:transparent;border:1px solid var(--line);color:var(--ink)}.download[hidden]{display:none}
+section.how{margin-top:42px;border-top:1px solid var(--line);padding-top:21px}section.how h2{font-size:23px}.steps{padding-left:23px;max-width:800px}.steps li{margin-bottom:9px}
+.note{margin-top:20px;background:var(--soft);border-radius:13px;padding:15px 19px;color:#414c40;font-size:14px}.foot{margin-top:40px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:18px}.foot a{color:var(--ink)}a{color:inherit}
+@media(max-width:660px){main{padding:22px 16px 40px}h1{margin-top:38px}.cards{grid-template-columns:1fr}.card{min-height:230px}}
+</style>
+<script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+</head>
+<body>
+<main>
+<header><span class="brand">RIPLEYBOOKDUAL 3.0 / PAPER S3</span><button class="lang" id="lang" type="button" aria-label="Switch language">EN</button></header>
+<h1>RipleyBookDual<br>Parallel 3.0</h1>
+<p class="lead" data-i18n="lead">RipleyBookDual 3.0，兩台 Paper S3，一份韌體即可單機或雙機閱讀。</p>
+<div class="eyebrow" data-i18n="choose">唯一完整版本</div>
+<div class="cards">
+<article class="card" id="card-full">
+<span class="version">3.0 Full</span><h2>Full · Solo / Spread / Parallel</h2>
+<p data-i18n="fullDesc">單機 ＋ Spread 即時捲角 ＋ Parallel 3.0 相對章節 ±N。兩本書，各自原地連線。</p>
+<div class="status" id="status-full" role="status" aria-live="polite" data-i18n="checking">檢查刷機檔…</div>
+<div class="install" id="install-full"></div>
+<a class="download" id="download-full" hidden download data-i18n="download">下載完整 BIN</a>
+</article>
+</div>
+<section class="how">
+<h2 data-i18n="guideTitle">如何安裝</h2>
+<ol class="steps">
+<li data-i18n="step1">使用電腦版 Chrome 或 Edge 開啟本站。iPad／iPhone Safari 無法直接刷 ESP32。</li>
+<li data-i18n="step2">以可傳輸資料的 USB-C 線接上 Paper S3，長按電源鍵直到背面紅燈閃爍，鬆開便進入下載模式。</li>
+<li data-i18n="step3">選 Parallel 3.0 Full，點選 Install，選擇正確的序列埠並確認寫入。</li>
+<li data-i18n="step4">兩台需安裝完全相同版本。完成後重啟，放入含 EPUB 的 SD 卡，再進 Reader 配對。</li>
+</ol>
+<div class="note" data-i18n="warning">這是出廠／救援刷機：可能清除既有 Flash 設定和閱讀進度。先備份，再刷機。僅適用 M5Stack Paper S3，不適用 M4、Tab5 或其他 ESP32。</div>
+</section>
+<section class="how" id="manual">
+<h2 data-i18n="manualTitle">完整教學 · 閱讀與自製 App</h2>
+<p data-i18n="manualIntro">刷機步驟、右機／左機配對、Spread／Parallel 3.0（±N 跳章）、系統與 Reader 字型，以及 Ripley 2048、Ripley Sudoku 的操作，都收在下面兩份手冊。</p>
+<p data-i18n="spreadPrereq"><strong>雙機閱讀：</strong>先統一兩台 Reader 的字型與字號；Spread 必須使用同一來源、完全相同的 EPUB。初次準備可直接複製 SD 卡內容。</p>
+<p><a href="https://github.com/2d-ripley/RipleyBook-DualS3-Flasher/blob/main/README.md">繁體中文完整手冊</a> · <a href="https://github.com/2d-ripley/RipleyBook-DualS3-Flasher/blob/main/README.en.md">Complete English manual</a></p>
+<p><a href="https://github.com/2d-ripley/RipleyBook-DualS3-Flasher/releases/download/sd-starter-v1/RipleyBookDual3.0-SD-Starter.zip" data-i18n="sdStarter">下載免費字型與 SD 資料夾套件（ZIP）</a> · <a href="https://raw.githubusercontent.com/ItMarki/jyunsaikaai/9e35c8713517762c36c84cdb5a9a9a0bdfec57b8/fonts/JyunsaiKaai-Regular.ttf" data-i18n="fontDirect">只下載 TTF 字型</a></p>
+<div class="note" data-i18n="manualStatus">只有完成完整 SHA-256 驗證的 Factory BIN 才能在本站安裝；請先備份。Factory BIN 與 SD Update BIN 不可混用。</div>
+</section>
+<p class="foot"><span data-i18n="credit">基於 CrossPoint Reader、CrossMux 與 FreeInk SDK 的開源成果。感謝原作者及社群。</span>
+<br><a href="https://github.com/crosspoint-reader/crosspoint-reader">CrossPoint</a> · <a href="https://github.com/0x1abin/crossmux">CrossMux</a> · <a href="https://github.com/2d-ripley/RipleyBook-DualS3-Flasher">Flasher repository</a> · <a href="THIRD_PARTY_NOTICES.txt">License notices</a> · <a href="https://github.com/2d-ripley/RipleyBook-DualS3-Flasher/releases">Firmware downloads</a> · <a href="https://github.com/2d-ripley/RipleyBookDual-p-Source/releases">Source ZIP</a></p>
+</main>
+<script type="module">
+const strings={
+zh:{lead:"RipleyBookDual 3.0，兩台 Paper S3，一份韌體即可單機或雙機閱讀。",choose:"唯一完整版本",spreadDesc:"單機閱讀 ＋ 雙頁 Spread。兩台螢幕，像打開一本書。",fullDesc:"單機 ＋ Spread 即時大捲角 ＋ Parallel 3.0（原地連線／相對 ±N 跨章）。",checking:"檢查刷機檔…",ready:"完整刷機檔已驗證，可安裝。",pending:"無法完成韌體驗證，請檢查網路連線或稍後再試。",browser:"請使用支援 Web Serial 的電腦瀏覽器。",download:"下載完整 BIN",install:"Install / 安裝",guideTitle:"如何安裝",step1:"使用電腦版 Chrome 或 Edge 開啟本站。iPad／iPhone Safari 無法直接刷 ESP32。",step2:"接上 USB-C 資料線，長按電源鍵直到背面紅色狀態燈閃爍，鬆開進入下載模式。",step3:"選 Parallel 3.0 Full，點選 Install，選擇正確的序列埠並確認寫入。",step4:"兩台需安裝完全相同版本。完成後重啟，放入含 EPUB 的 SD 卡，再進 Reader 配對。",warning:"這是出廠／救援刷機：可能清除既有 Flash 設定和閱讀進度。先備份，再刷機。僅適用 M5Stack Paper S3，不適用 M4、Tab5 或其他 ESP32。",manualTitle:"完整教學 · 閱讀與自製 App",manualIntro:"兩份詳細手冊包括 USB 刷機、RIGHT／LEFT 配對、Spread 與 Parallel、TTF 字型，以及 Ripley 2048、Ripley Sudoku 的操作方式。",spreadPrereq:"雙機閱讀：先統一兩台 Reader 的字型與字號；Spread 必須使用同一來源、完全相同的 EPUB。初次準備可直接複製 SD 卡內容。",sdStarter:"下載免費字型與 SD 資料夾套件（ZIP）",fontDirect:"只下載 TTF 字型",manualStatus:"只有完成完整 SHA-256 驗證的 Factory BIN 才能在本站安裝；請先備份。Factory BIN 與 SD Update BIN 不可混用。",credit:"基於 CrossPoint Reader、CrossMux 與 FreeInk SDK 的開源成果。感謝原作者及社群。"},
+en:{lead:"RipleyBookDual 3.0: one Full firmware for solo reading or two Paper S3 readers.",choose:"One Full firmware",spreadDesc:"Solo reading + two facing pages. Two screens, one open book.",fullDesc:"Solo + Spread tap-first page curl + Parallel 3.0 (in-place join, relative ±N chapter jumps).",checking:"Checking installer files…",ready:"Verified factory image available.",pending:"Firmware verification could not be completed. Check your connection and try again.",browser:"A desktop browser with Web Serial is required.",download:"Download complete BIN",install:"Install",guideTitle:"How to install",step1:"Open this site in desktop Chrome or Edge. iPad/iPhone Safari cannot flash an ESP32 directly.",step2:"Connect a data-capable USB-C cable. Hold the power button until the rear status LED flashes red, then release to enter download mode.",step3:"Select Parallel 3.0 Full, press Install, select your serial port and confirm.",step4:"Flash the same edition to both readers. Reboot, insert SD cards with EPUBs, then pair inside Reader.",warning:"Factory/recovery flashing can erase existing on-device settings and reading progress. Back up first. Paper S3 only—not M4, Tab5 or other ESP32 boards.",manualTitle:"Full guides · Reading and custom apps",manualIntro:"Both manuals cover USB flashing, pairing RIGHT and LEFT, Spread and Parallel, custom TTF fonts, Ripley 2048 and Ripley Sudoku controls.",spreadPrereq:"Dual reading: match the Reader font and font size on both devices. Spread requires the exact same EPUB from the same source; copying SD card contents before first use is easiest.",sdStarter:"Download optional SD Starter with OFL font (ZIP)",fontDirect:"Download original TTF only",manualStatus:"Install is enabled only when the exact Factory BIN passes full SHA-256 verification. Back up first. Factory and SD Update BINs are not interchangeable.",credit:"Built on open-source work by the CrossPoint Reader, CrossMux and FreeInk SDK communities. With thanks to their authors and contributors."}};
+let lang="zh";const el=document.getElementById("lang");
+function render(){document.documentElement.lang=lang==="zh"?"zh-Hant":"en";el.textContent=lang==="zh"?"EN":"繁中";for(const node of document.querySelectorAll("[data-i18n]")){const k=node.dataset.i18n;if(strings[lang][k])node.textContent=strings[lang][k];}for(const variant of ["full"]){const status=document.getElementById("status-"+variant);if(status.dataset.state)status.textContent=strings[lang][status.dataset.state];}}
+el.addEventListener("click",()=>{lang=lang==="zh"?"en":"zh";render()});
+// Hardware-validated factory SHA-256 values only. Empty means NOT RELEASED.
+// Original application hashes must NEVER be used here as factory-image hashes.
+// Exactly ONE distributable Full factory BIN. The manifest is generated in
+// memory, so no firmware source, build artifacts or JSON resource packs are
+// required in this release-only repository.
+const releases = Object.freeze({
+  "full": {
+    version: "3.0 Full",
+    file: "RipleyBookDual3.0-Full-Factory.bin",
+    factorySize: 0, // set ONLY after 0x0 factory hardware boot acceptance
+    applicationSHA256: "",
+    factorySHA256: "" // keep Install disabled until exact 0x0 Factory boot test passes
+  }
+});
+const digestHex = async bytes => {
+  const digest=await crypto.subtle.digest("SHA-256",bytes);
+  return Array.from(new Uint8Array(digest),n=>n.toString(16).padStart(2,"0")).join("");
+};
+async function checkRelease(id){
+ const status=document.getElementById("status-"+id),slot=document.getElementById("install-"+id),download=document.getElementById("download-"+id);
+ try{
+  const spec=releases[id];
+  if(!spec || !/^[0-9a-f]{64}$/.test(spec.factorySHA256))
+    throw Error("first-flash acceptance has not been recorded");
+  const fileUrl=new URL("./firmware/"+spec.file,location.href);
+  if(fileUrl.origin!==location.origin)throw Error("unexpected origin");
+  const response=await fetch(fileUrl,{cache:"no-store"});
+  if(!response.ok)throw Error("factory binary unavailable");
+  const bytes=await response.arrayBuffer(), u=new Uint8Array(bytes);
+  if(u.length!==spec.factorySize || u[0]!==0xe9 || u[12]!==9 ||
+     u[0x8000]!==0xaa || u[0x8001]!==0x50 ||
+     u[0x10000]!==0xe9 || u[0x1000c]!==9)
+    throw Error("image is not the exact validated ESP32-S3 factory layout");
+  if(await digestHex(bytes)!==spec.factorySHA256)throw Error("full factory image digest does not match");
+  if(await digestHex(bytes.slice(0x10000))!==spec.applicationSHA256)throw Error("embedded sealed application differs");
+  // Web Installer manifest is only an in-memory descriptor of the ONE full
+  // image at offset 0. It is not a third downloadable firmware or resource.
+  const m={
+    name:"RipleyBookDual 3.0 Full",
+    version:spec.version,
+    new_install_prompt_erase:true,
+    new_install_improv_wait_time:0, // firmware does not implement ESPHome Improv Serial
+    builds:[{chipFamily:"ESP32-S3",parts:[{path:fileUrl.href,offset:0}]}]
+  };
+  const manifestUrl=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:"application/json"}));
+  const component=document.createElement("esp-web-install-button");
+  component.setAttribute("manifest",manifestUrl);
+  const activate=document.createElement("button");
+  activate.slot="activate";activate.textContent=strings[lang].install;
+  component.appendChild(activate);
+  const unsupported=document.createElement("span");
+  unsupported.slot="unsupported";unsupported.textContent=strings[lang].browser;
+  component.appendChild(unsupported);
+  slot.replaceChildren(component);
+  download.href=fileUrl.href;download.hidden=false;
+  status.dataset.state="ready";status.className="status ready";
+  status.textContent=strings[lang].ready;
+ }catch(_){
+  status.dataset.state="pending";status.className="status locked";
+  status.textContent=strings[lang].pending;
+  slot.replaceChildren();download.hidden=true;
+ }
+}
+render();checkRelease("full");
+</script>
+</body></html>

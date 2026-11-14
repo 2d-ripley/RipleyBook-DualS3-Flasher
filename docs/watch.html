@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RipleyBookDual 3.0 — Video demos</title>
+<meta name="description" content="Watch RipleyBookDual 3.0 Spread and Parallel demonstrations in English and Traditional Chinese.">
+<style>
+:root{color-scheme:light;--ink:#1c3046;--blue:#235c98;--line:#dbe4ed;--bg:#f5f8fc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:960px;margin:0 auto;padding:clamp(16px,4vw,36px)}
+h1{font-size:clamp(25px,4vw,34px);margin:0 0 8px}
+header p{margin:0 0 22px;color:#526678}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+nav a{border:1px solid var(--line);background:white;border-radius:10px;padding:8px 11px;text-decoration:none;color:var(--blue)}
+nav a[aria-current="page"]{background:var(--blue);color:white}
+section{background:white;border:1px solid var(--line);border-radius:16px;padding:clamp(12px,3vw,24px);box-shadow:0 2px 12px #1b3b5910}
+h2{margin:0 0 10px;font-size:22px}
+video{display:block;width:100%;height:auto;max-height:75vh;background:black;border-radius:8px}
+.small{font-size:14px;color:#526678;margin:12px 0 0}
+a{color:var(--blue)}
+footer{font-size:13px;color:#667789;margin-top:20px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>RipleyBookDual 3.0</h1>
+<p id="subtitle">Video demonstrations / 影片示範</p>
+</header>
+<nav id="choices" aria-label="Choose a video"></nav>
+<section>
+<h2 id="title"></h2>
+<video id="player" controls playsinline preload="metadata" aria-label="RipleyBookDual demonstration"></video>
+<p class="small" id="note"></p>
+<p class="small"><a id="download" download>MP4 / 下載原始影片</a></p>
+</section>
+<footer>These videos are served as regular MP4 files by GitHub Pages. Playback depends on Pages deployment and your browser's codec support. No external player service is required.</footer>
+</main>
+<script>
+const media = {
+  "spread-zh": {name:"Spread · 繁體中文", title:"Spread 模式：跨頁閱讀", poster:"media/spread.jpg"},
+  "parallel-zh":{name:"Parallel · 繁體中文",title:"Parallel 3.0：雙書同步",poster:"media/parallel.jpg"},
+  "spread-en":{name:"Spread · English",title:"Spread: one book across two readers",poster:"media/spread-en.jpg"},
+  "parallel-en":{name:"Parallel · English",title:"Parallel 3.0: two books side by side",poster:"media/parallel-en.jpg"}
+};
+const params=new URLSearchParams(location.search);
+const requested=params.get("v");
+const key=Object.prototype.hasOwnProperty.call(media,requested)?requested:"spread-zh";
+const chosen=media[key], source="media/"+key+".mp4";
+document.documentElement.lang=key.endsWith("-zh")?"zh-Hant":"en";
+document.getElementById("title").textContent=chosen.title;
+document.getElementById("player").setAttribute("poster",chosen.poster);
+document.getElementById("player").setAttribute("src",source);
+document.getElementById("download").href=source;
+document.getElementById("note").textContent=key.endsWith("-zh")
+ ?"影片使用原始 MP4，無須壓縮。若無法播放，可使用下方連結下載。"
+ :"The original MP4 is unchanged. If playback is unavailable, use the download link.";
+const nav=document.getElementById("choices");
+for(const [slug,item] of Object.entries(media)){
+ const a=document.createElement("a");
+ a.href="watch.html?v="+encodeURIComponent(slug);
+ a.textContent=item.name;
+ if(slug===key)a.setAttribute("aria-current","page");
+ nav.appendChild(a);
+}
+</script>
+</body>
+</html>
