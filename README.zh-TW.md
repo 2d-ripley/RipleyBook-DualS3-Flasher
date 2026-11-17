@@ -42,12 +42,11 @@ RipleyBookDual 3.0 是專為 **M5Stack Paper S3** 製作的 EPUB 閱讀韌體。
 - **3.0 Full Factory BIN**：[RipleyBookDual3.0-Full-Factory.bin](docs/firmware/RipleyBookDual3.0-Full-Factory.bin)（6,333,440 bytes；已通過實機刷機驗收）。
 - **對應原始碼**：[RipleyBookDual-p-Source](https://github.com/2d-ripley/RipleyBookDual-p-Source/releases) 提供完整 Source ZIP 與 SHA-256。
 
-| 韌體檔案 | 用途 | 安裝方式 |
+| 公開韌體 | 用途 | 安裝方式 |
 | --- | --- | --- |
-| **Factory BIN**（已通過實機驗收） | 首次安裝、故障救援、完整 USB 刷機 | **RipleyBookDual 一鍵刷機頁**（首選）；官方 ESP Tool 為進階備用，**起始位址 `0x0`** |
-| **SD Update BIN**（後續升級用） | 系統已能運作時更新應用程式 | 機內 **System → SD Firmware Update** |
+| **僅提供完整 Full Factory BIN** | 首次安裝、故障救援，以及每一次公開版本更新 | **RipleyBookDual 一鍵 USB 刷機頁**（首選）；官方 ESP Tool 為進階備用，永遠使用起始位址 `0x0` |
 
-**絕對不要**把 Factory BIN 當 SD Update 使用，也不要將應用程式 BIN 寫在 `0x0`。改檔名不會改變韌體格式。
+**本公開 Flasher 只提供完整 Full Factory 映像，絕不放置 SD Update／application-only BIN。** 每個公開版本都使用同一套 USB Factory 安裝方式，避免混淆不同韌體格式。Factory 刷機可能重設 Flash 內的設定與閱讀進度，請先備份重要資料；microSD 上的書籍與字型檔則分開保存。
 
 ## 第一步：安裝 Factory 韌體
 
