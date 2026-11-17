@@ -42,12 +42,11 @@ RipleyBookDual 3.0 is an EPUB reader firmware for the **M5Stack Paper S3**. Ther
 - **3.0 Full Factory BIN:** [RipleyBookDual3.0-Full-Factory.bin](docs/firmware/RipleyBookDual3.0-Full-Factory.bin) (6,333,440 bytes; installation verified on a real Paper S3).
 - **Corresponding source and checksums:** Download the complete Source ZIP from [RipleyBookDual-p-Source Releases](https://github.com/2d-ripley/RipleyBookDual-p-Source/releases).
 
-| Firmware | Purpose | Installation |
+| Public firmware | Purpose | Installation |
 | --- | --- | --- |
-| **Factory BIN** (hardware-tested) | First-time setup, recovery or complete USB flashing | **RipleyBookDual one-click installer** (recommended); Espressif's manual ESP Tool is the advanced fallback, using offset `0x0` |
-| **SD Update BIN** (future releases) | Update the application on an already working device | On-device **System → SD Firmware Update** |
+| **Full Factory BIN only** | First installation, recovery, and every published version update | **RipleyBookDual one-click USB installer** (recommended); Espressif's manual ESP Tool is the advanced fallback, always using offset `0x0` |
 
-**Never use the Factory BIN for SD Firmware Update or flash an application-only BIN at `0x0`.** Renaming the file does not change its format.
+**This public Flasher distributes complete Full Factory images only. It never offers SD Update/application-only BINs.** Every published version uses the same USB Factory installation procedure, avoiding confusion between incompatible image types. Factory flashing may reset flash-resident settings and reading progress; back up important data first. Your microSD books and font files are separate.
 
 ## Step 1: Install the Factory firmware
 
