@@ -1,6 +1,6 @@
 # RipleyBookDual v3.0.1 — Vertical CJK Reading
 
-## 🇹🇼 繁體中文｜中日文直排閱讀
+##  繁體中文｜中日文直排閱讀
 
 v3.0.1 新增中、日文直排閱讀支援，同時保留原有的橫排閱讀方式。
 
@@ -18,7 +18,7 @@ v3.0.1 新增中、日文直排閱讀支援，同時保留原有的橫排閱讀�
 
 ---
 
-## 🇯🇵 日本語｜日本語・中国語の縦書き対応
+##  日本語｜日本語・中国語の縦書き対応
 
 v3.0.1では、日本語・中国語の縦書きに対応しました。従来の横書き表示も引き続き利用できます。
 
@@ -36,7 +36,7 @@ Spreadモードを使用する場合は、**接続前に右側の端末でRTLま
 
 ---
 
-## 🇬🇧 English｜Vertical Chinese & Japanese Reading
+##  English｜Vertical Chinese & Japanese Reading
 
 v3.0.1 introduces vertical Chinese and Japanese reading while preserving the original horizontal reading experience.
 
