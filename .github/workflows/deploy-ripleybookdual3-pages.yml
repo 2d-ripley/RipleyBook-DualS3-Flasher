@@ -71,14 +71,14 @@ jobs:
                        '<span class="brand">RIPLEYBOOKDUAL 3.0.1 / PAPER S3</span>')
           replace_once('<span class="version">3.0 Full</span>',
                        '<span class="version">3.0.1 Full</span>')
-          replace_once('RipleyBookDual 3.0，兩台 Paper S3',
-                       'RipleyBookDual 3.0.1，兩台 Paper S3')
+          replace_once('<p class="lead" data-i18n="lead">RipleyBookDual 3.0，兩台 Paper S3',
+                       '<p class="lead" data-i18n="lead">RipleyBookDual 3.0.1，兩台 Paper S3')
           replace_once('zh:{lead:"RipleyBookDual 3.0，兩台 Paper S3',
                        'zh:{lead:"RipleyBookDual 3.0.1，兩台 Paper S3')
           replace_once('en:{lead:"RipleyBookDual 3.0: one Full firmware',
                        'en:{lead:"RipleyBookDual 3.0.1: one Full firmware')
-          replace_once('選 Parallel 3.0 Full，點選 Install',
-                       '選 v3.0.1 Full，點選 Install')
+          replace_once('<li data-i18n="step3">選 Parallel 3.0 Full，點選 Install',
+                       '<li data-i18n="step3">選 v3.0.1 Full，點選 Install')
           replace_once('step3:"選 Parallel 3.0 Full，點選 Install',
                        'step3:"選 v3.0.1 Full，點選 Install')
           replace_once('Select Parallel 3.0 Full, press Install',
@@ -86,8 +86,8 @@ jobs:
           replace_once('完整教學 · 閱讀與自製 App</h2>',
                        '完整教學 · 閱讀與自製 App</h2>')
           # Show the new feature and its non-negotiable pairing rule in both languages.
-          replace_once('兩台需安裝完全相同版本。完成後重啟',
-                       '兩台都需安裝 v3.0.1。Spread 連線前，先在右機選 RTL／LTR；連線後兩機方向一致且不可更改。完成後重啟')
+          replace_once('<li data-i18n="step4">兩台需安裝完全相同版本。完成後重啟',
+                       '<li data-i18n="step4">兩台都需安裝 v3.0.1。Spread 連線前，先在右機選 RTL／LTR；連線後兩機方向一致且不可更改。完成後重啟')
           replace_once('step4:"兩台需安裝完全相同版本。完成後重啟',
                        'step4:"兩台都需安裝 v3.0.1。Spread 連線前，先在右機選 RTL／LTR；連線後兩機方向一致且不可更改。完成後重啟')
           replace_once('Flash the same edition to both readers. Reboot',
