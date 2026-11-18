@@ -1,7 +1,11 @@
-name: Deploy RipleyBookDual 3.0 Full Web Flasher (manual)
+name: Deploy RipleyBookDual v3.0.1 Full Web Flasher
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-ripleybookdual3-pages.yml'
 
 permissions:
   contents: read
@@ -20,56 +24,91 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout exactly the P3.0 one-Full flasher
+      - name: Checkout flasher repository
         uses: actions/checkout@v4
         with:
-          ref: main
           persist-credentials: false
-      - name: Fail-closed verification of newly boot-tested P3.0 Factory; no fallback
+
+      - name: Download and verify hardware-tested v3.0.1 Full Factory
+        shell: bash
         run: |
           set -Eeuo pipefail
           mkdir -p docs/firmware
-          # NEVER borrow a previous version or silently download an old factory.
-          # The exact 3.0 factory must be uploaded and hardware-boot approved.
-          test -f docs/firmware/RipleyBookDual3.0-Full-Factory.bin
+          url="https://github.com/2d-ripley/RipleyBook-DualS3-Flasher/releases/download/v3.0.1/RipleyBookDual3.0.1-Full-Factory.bin"
+          curl --fail --location --retry 3 --silent --show-error "$url" -o docs/firmware/RipleyBookDual3.0.1-Full-Factory.bin
           python3 - <<'PY'
           from pathlib import Path
           import hashlib
-          p=Path("docs/firmware/RipleyBookDual3.0-Full-Factory.bin")
+          p=Path("docs/firmware/RipleyBookDual3.0.1-Full-Factory.bin")
           b=p.read_bytes()
-          expected="36da144dd3d8c4ce4fc33a3e8ff2db60bed4738312e5ed15794ba475ec1f16b1"
-          assert len(b)==6333440, "Unexpected factory size"
-          assert hashlib.sha256(b).hexdigest()==expected, "Factory SHA changed"
-          assert b[0]==0xe9 and b[12]==9 and b[0x8000:0x8002]==bytes.fromhex('aa50')
-          assert b[0x10000]==0xe9 and b[0x1000c]==9
-          assert hashlib.sha256(b[0x10000:]).hexdigest()=="c0a46ccb4f777487bdfc4b94321cbe8f5683145587a24cd6f7a4801641b14838"
-          assert b[0xe000:0x10000]==bytes([255])*0x2000
-          print("PASS: exact P3.0 0x0 Factory BIN, manually authorized after physical boot test",len(b),expected)
-          PY
-      - name: Unlock only the cryptographically pinned P3.0 Full installer
-        run: |
-          set -Eeuo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
+          expected="f320ffb554f085fc355dee072b5b5af63b892790cd45d594372f87d276281d9f"
+          assert len(b)==6375648, "Wrong v3.0.1 factory image size"
+          assert hashlib.sha256(b).hexdigest()==expected, "Wrong v3.0.1 factory SHA-256"
+          assert b[0]==0xe9 and b[12]==9, "Wrong bootloader header"
+          assert b[0x8000:0x8002]==bytes.fromhex("aa50"), "Wrong partition table"
+          assert b[0x10000]==0xe9 and b[0x1000c]==9, "Wrong app header"
+          assert b[0xe000:0x10000]==bytes([255])*0x2000, "Unexpected OTA gap"
+          apphash=hashlib.sha256(b[0x10000:]).hexdigest()
+          print("Verified v3.0.1 Factory:",len(b),expected,"app:",apphash)
           f=Path("docs/index.html")
-          s=f.read_text(encoding='utf-8')
-          def once(a,b):
-            global s
-            assert s.count(a)==1,(a[:100],s.count(a))
-            s=s.replace(a,b,1)
-          once('factorySize: 0, // set ONLY after 0x0 factory hardware boot acceptance','factorySize: 6333440, // verified in deployed Pages artifact')
-          once('applicationSHA256: "",','applicationSHA256: "c0a46ccb4f777487bdfc4b94321cbe8f5683145587a24cd6f7a4801641b14838",')
-          once('factorySHA256: "" // keep Install disabled until exact 0x0 Factory boot test passes',
-               'factorySHA256: "36da144dd3d8c4ce4fc33a3e8ff2db60bed4738312e5ed15794ba475ec1f16b1" // exact verified Factory bytes')
-          assert s.count('id="card-full"')==1
-          assert 'id="card-spread-only"' not in s
-          f.write_text(s,encoding='utf-8')
-          print("PASS: Pages installer points to the ONE same-origin Full BIN with pinned hashes")
+          s=f.read_text(encoding="utf-8")
+          def replace_once(old,new):
+              global s
+              assert s.count(old)==1,(old,s.count(old))
+              s=s.replace(old,new,1)
+          replace_once('factorySize: 0, // set ONLY after 0x0 factory hardware boot acceptance',
+                       'factorySize: 6375648, // v3.0.1 verified hardware-tested Factory')
+          replace_once('applicationSHA256: "",',f'applicationSHA256: "{apphash}",')
+          replace_once('factorySHA256: "" // keep Install disabled until exact 0x0 Factory boot test passes',
+                       'factorySHA256: "'+expected+'" // pinned v3.0.1 Factory SHA-256')
+          replace_once('file: "RipleyBookDual3.0-Full-Factory.bin"',
+                       'file: "RipleyBookDual3.0.1-Full-Factory.bin"')
+          replace_once('version: "3.0 Full"','version: "3.0.1 Full"')
+          replace_once('name:"RipleyBookDual 3.0 Full"','name:"RipleyBookDual 3.0.1 Full"')
+          replace_once('<title>RipleyBookDual · Parallel 3.0 Flasher</title>',
+                       '<title>RipleyBookDual · v3.0.1 Flasher</title>')
+          replace_once('<span class="brand">RIPLEYBOOKDUAL 3.0 / PAPER S3</span>',
+                       '<span class="brand">RIPLEYBOOKDUAL 3.0.1 / PAPER S3</span>')
+          replace_once('<span class="version">3.0 Full</span>',
+                       '<span class="version">3.0.1 Full</span>')
+          replace_once('RipleyBookDual 3.0，兩台 Paper S3',
+                       'RipleyBookDual 3.0.1，兩台 Paper S3')
+          replace_once('zh:{lead:"RipleyBookDual 3.0，兩台 Paper S3',
+                       'zh:{lead:"RipleyBookDual 3.0.1，兩台 Paper S3')
+          replace_once('en:{lead:"RipleyBookDual 3.0: one Full firmware',
+                       'en:{lead:"RipleyBookDual 3.0.1: one Full firmware')
+          replace_once('選 Parallel 3.0 Full，點選 Install',
+                       '選 v3.0.1 Full，點選 Install')
+          replace_once('step3:"選 Parallel 3.0 Full，點選 Install',
+                       'step3:"選 v3.0.1 Full，點選 Install')
+          replace_once('Select Parallel 3.0 Full, press Install',
+                       'Select v3.0.1 Full, press Install')
+          replace_once('完整教學 · 閱讀與自製 App</h2>',
+                       '完整教學 · 閱讀與自製 App</h2>')
+          # Show the new feature and its non-negotiable pairing rule in both languages.
+          replace_once('兩台需安裝完全相同版本。完成後重啟',
+                       '兩台都需安裝 v3.0.1。Spread 連線前，先在右機選 RTL／LTR；連線後兩機方向一致且不可更改。完成後重啟')
+          replace_once('step4:"兩台需安裝完全相同版本。完成後重啟',
+                       'step4:"兩台都需安裝 v3.0.1。Spread 連線前，先在右機選 RTL／LTR；連線後兩機方向一致且不可更改。完成後重啟')
+          replace_once('Flash the same edition to both readers. Reboot',
+                       'Flash v3.0.1 on both readers. For Spread, choose RTL/LTR on the RIGHT device before pairing; direction cannot change while connected. Reboot')
+          replace_once('單機 ＋ Spread 即時捲角 ＋ Parallel 3.0 相對章節 ±N。',
+                       '單機＋Spread＋Parallel 3.0；新增中文／日文 RTL 直排。')
+          replace_once('fullDesc:"單機 ＋ Spread 即時大捲角 ＋ Parallel 3.0（原地連線／相對 ±N 跨章）。"',
+                       'fullDesc:"單機＋Spread＋Parallel 3.0；新增中文／日文 RTL 直排（RTL 無大捲角）。"')
+          replace_once('fullDesc:"Solo + Spread tap-first page curl + Parallel 3.0 (in-place join, relative ±N chapter jumps)."',
+                       'fullDesc:"Solo + Spread + Parallel 3.0; new vertical Chinese/Japanese RTL reading (no large curl in RTL)."')
+          f.write_text(s,encoding="utf-8")
+          assert 'RipleyBookDual3.0.1-Full-Factory.bin' in s
+          assert 'factorySize: 6375648' in s
+          assert '連線後兩機方向一致且不可更改' in s
+          print("Verified v3.0.1 installer configured")
           PY
           test -f docs/.nojekyll
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Upload the P3.0 static Pages site and its single Factory BIN
+      - name: Upload verified v3.0.1 static Pages site
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
